@@ -1,0 +1,72 @@
+type Approve = record {
+  fee : E8s;
+  from : blob;
+  allowance_e8s : int64;
+  allowance : E8s;
+  expected_allowance : opt E8s;
+  expires_at : opt Timestamp;
+  spender : blob;
+};
+type Burn = record { from : blob; amount : E8s; spender : opt blob };
+type E8s = record { e8s : nat64 };
+type Error = record { message : text };
+type Mint = record { to : blob; amount : E8s };
+type Network = variant { Mainnet; Local };
+type Operation = variant {
+  Approve : Approve;
+  Burn : Burn;
+  Mint : Mint;
+  Transfer : Transfer;
+};
+type Result = variant { Ok : text; Err : Error };
+type Result_1 = variant { Ok : text; Err : text };
+type Result_2 = variant { Ok : vec StoredTransactions; Err : Error };
+type Result_3 = variant { Ok : nat64; Err : text };
+type Result_4 = variant { Ok : Network; Err : text };
+type Result_5 = variant { Ok : nat32; Err : text };
+type Result_6 = variant { Ok : opt nat64; Err : text };
+type Result_7 = variant { Ok : vec StoredTransactions; Err : text };
+type Result_8 = variant { Ok : nat64; Err : Error };
+type Result_9 = variant { Ok : vec text; Err : Error };
+type StoredTransactions = record {
+  sweep_status : SweepStatus;
+  memo : nat64;
+  icrc1_memo : opt blob;
+  operation : opt Operation;
+  index : nat64;
+  created_at_time : Timestamp;
+  tx_hash : text;
+};
+type SweepStatus = variant { Swept; FailedToSweep; NotSwept };
+type Timestamp = record { timestamp_nanos : nat64 };
+type Transfer = record {
+  to : blob;
+  fee : E8s;
+  from : blob;
+  amount : E8s;
+  spender : opt blob;
+};
+service : (Network, nat64, nat32, text, text) -> {
+  add_subaccount : () -> (Result);
+  canister_status : () -> (Result_1) query;
+  clear_transactions : (opt nat64, opt Timestamp) -> (Result_2);
+  get_canister_principal : () -> (Result_1) query;
+  get_interval : () -> (Result_3) query;
+  get_network : () -> (Result_4) query;
+  get_next_block : () -> (Result_3) query;
+  get_nonce : () -> (Result_5) query;
+  get_oldest_block : () -> (Result_6) query;
+  get_subaccount_count : () -> (Result_5) query;
+  get_subaccountid : (nat32) -> (Result) query;
+  get_transactions_count : () -> (Result_5) query;
+  get_webhook_url : () -> (Result_1) query;
+  list_transactions : (opt nat64) -> (Result_7) query;
+  refund : (nat64) -> (Result);
+  set_interval : (nat64) -> (Result_8);
+  set_next_block : (nat64) -> (Result_8);
+  set_sweep_failed : (text) -> (Result_9);
+  set_webhook_url : (text) -> (Result);
+  single_sweep : (text) -> (Result_9);
+  sweep : () -> (Result_9);
+  sweep_subaccount : (text, float64) -> (Result_8);
+}
